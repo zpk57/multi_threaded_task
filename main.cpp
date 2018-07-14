@@ -1,32 +1,18 @@
-#include <iostream>
-#include "ThreadPool.h"
+/* Copyright (C) 2018 Petr Zotov.  You may use this program, or *
+ * code, as desired without restriction.						*/
 
-std::mutex g_print_mutex;
-
-class PrintEvent : public ThreadPool::IThreadEvent
-{
-public:
-	PrintEvent( unsigned int num ) : 
-		m_num( num ) 
-	{}
-	
-	void execute() override
-	{
-		std::lock_guard<std::mutex> lg( g_print_mutex );
-		std::cout << "Printing... " << m_num << std::endl;
-	}
-	unsigned int m_num;
-};
+#include "DataAggregator.h"
 
 int main( int argc, char * argv[]) 
 {
-	ThreadPool tp;
-	tp.start( 2 );
-	unsigned int count = 0;
-	for ( int i = 0; i < 10; ++i ) {
-		tp.add_event( new PrintEvent( ++count ) );
-	}
-	tp.flush();
-	tp.stop();
+	uint64_t block_size = 256;
+	uint64_t blocks_num = 10;
+	uint32_t generator_threads_num = 5;
+	uint32_t crc32_threads_num = 5;
+	
+	DataAggregator aggregator;
+	
+	aggregator.start( block_size, blocks_num, generator_threads_num, crc32_threads_num );	
+	aggregator.flush_n_stop();
 	return 0; 
 }

@@ -1,4 +1,8 @@
+/* Copyright (C) 2018 Petr Zotov.  You may use this program, or *
+ * code, as desired without restriction.						*/
+   
 #include "ThreadPool.h"
+#include <iostream>
 
 class FlushEvent : public ThreadPool::IThreadEvent
 {
@@ -28,7 +32,7 @@ ThreadPool::~ThreadPool()
 
 int ThreadPool::start( unsigned int threads_num )
 {
-	m_threads.resize( threads_num );
+	m_threads.reserve( threads_num );
 	for ( unsigned int i = 0; i < threads_num; ++i ) {
 		m_threads.emplace_back( &ThreadPool::thread_function, this );
 	}
@@ -63,7 +67,14 @@ int ThreadPool::stop()
 int ThreadPool::add_event( ThreadPool::IThreadEvent* event )
 {
 	{
-		std::unique_lock<std::mutex> ul( m_mutex );
+		try{
+			std::unique_lock<std::mutex> ul( m_mutex );
+		}
+		catch (...) 
+		{
+			std::cerr << "Error!!111 " << std::endl;
+			return -1;
+		}
 		m_queue.push( event );
 	}
 	m_cv.notify_one();

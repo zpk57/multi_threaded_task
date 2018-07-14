@@ -1,10 +1,13 @@
+#pragma once
+
+/* Copyright (C) 2018 Petr Zotov.  You may use this program, or *
+ * code, as desired without restriction.						*/
+
 #include <queue>
 #include <mutex>
-#include <functional>
 #include <vector>
 #include <thread>
 #include <condition_variable>
-
 
 class ThreadPool
 {
