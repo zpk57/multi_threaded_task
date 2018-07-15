@@ -6,6 +6,8 @@
 #include <memory>
 #include "DataWrapper.h"
 
+// Interface provides functionality to registering created data
+// and notifying about crc32 calculation is done
 class IDataHandler
 {
 public:

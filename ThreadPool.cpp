@@ -4,6 +4,7 @@
 #include "ThreadPool.h"
 #include <iostream>
 
+//Flush event for queue flush
 class FlushEvent : public ThreadPool::IThreadEvent
 {
 public: 
@@ -43,6 +44,7 @@ int ThreadPool::flush()
 {
 	std::mutex flush_mutex;
 	add_event( new FlushEvent( &flush_mutex ) );
+	//mutex can be aquired only after flush event is done
 	std::lock_guard<std::mutex> lg( flush_mutex );
 	return 0;
 }
@@ -67,20 +69,13 @@ int ThreadPool::stop()
 int ThreadPool::add_event( ThreadPool::IThreadEvent* event )
 {
 	{
-		try{
-			std::unique_lock<std::mutex> ul( m_mutex );
-		}
-		catch (...) 
-		{
-			std::cerr << "Error!!111 " << std::endl;
-			return -1;
-		}
+		std::unique_lock<std::mutex> ul( m_mutex );
 		m_queue.push( event );
 	}
 	m_cv.notify_one();
 	return 0;
 }
-	
+
 ThreadPool::IThreadEvent* ThreadPool::get_event()
 {
 	if ( 0 == m_queue.size() ) {

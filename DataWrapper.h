@@ -8,22 +8,29 @@
 #include <mutex>
 #include <vector>
 
+// wrapper class for data entry
+// provides generation, calculation and check functionality
 class DataWrapper
 {
 public:
 	DataWrapper( uint64_t size );
 	
-	int generate_data();
+	// not a thread-safely
+	int generate_data( unsigned int rand_pos );	
 	
-	const uint8_t * get_rd() const;
-	
+	// calculate crc32
 	uint32_t calculate_crc32() const;
 	
+	// register calculated crc32 from some thread
 	uint32_t register_thread_crc32( uint32_t crc_value );
 	
+	// return 0 if all crc32 is match
 	int check_crc32();
 	
+	// data accessors
 	uint32_t get_crc32();
+	const uint8_t * get_rd() const;	
+	uint64_t get_size() const;
 	
 private:
 	uint64_t m_size;

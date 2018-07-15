@@ -9,6 +9,7 @@
 #include <thread>
 #include <condition_variable>
 
+// Class provides thread pool with one FIFO queue for threads set
 class ThreadPool
 {
 public:	
